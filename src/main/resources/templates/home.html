@@ -1,0 +1,13 @@
+<html>
+<body>
+
+<h1>Convert PDF To Text File</h1>
+
+<form method="POST" action="/file/upload" enctype="multipart/form-data">
+    <input required type="file" name="file" accept="application/pdf"/><br/>
+    <p style="color: red;">[[${limitSizeError}]]</p>
+    <input type="submit" value="Convert and Download"/>
+</form>
+
+</body>
+</html>

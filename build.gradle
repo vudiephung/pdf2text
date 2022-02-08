@@ -1,0 +1,39 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.9'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.challenge'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    implementation 'junit:junit:4.13.2'
+    implementation 'junit:junit:4.13.2'
+    implementation 'org.jetbrains:annotations:22.0.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.junit.vintage:junit-vintage-engine'
+    testImplementation("junit:junit")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks.withType(Jar).all {
+    duplicatesStrategy 'exclude'
+}
+
+test {
+    useJUnit()
+}
