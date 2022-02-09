@@ -28,7 +28,6 @@ public class StorageService {
     @Autowired
     private AmazonS3 s3Client;
 
-
     public String convertAndUploadFile(MultipartFile file) throws IOException {
         File fileObj = convertMultiPartFileToFile(file);
 
@@ -45,7 +44,6 @@ public class StorageService {
         return fileName;
     }
 
-
     public byte[] downloadFile(String fileName) {
         S3Object s3Object = s3Client.getObject(bucketName, fileName);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
@@ -58,12 +56,10 @@ public class StorageService {
         return null;
     }
 
-
 //    public String deleteFile(String fileName) {
 //        s3Client.deleteObject(bucketName, fileName);
 //        return fileName + " removed ...";
 //    }
-
 
     private File convertMultiPartFileToFile(MultipartFile file) {
         File convertedFile = new File(file.getOriginalFilename());
