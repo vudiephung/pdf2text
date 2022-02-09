@@ -15,11 +15,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 public class ConverterService {
-
-    public static File convertPDFToText(File uploadedFile) throws IOException {
+    public static File convertPDFToText(File uploadedFile) {
         String originalFileName = uploadedFile.getName();
 
         // remove ".pdf" in the file name and replace it by ".txt"
@@ -52,7 +50,7 @@ public class ConverterService {
 
             myWriter.close();
 
-        } catch (TesseractException e) {
+        } catch (TesseractException | IOException e) {
             e.printStackTrace();
         }
 
@@ -60,14 +58,12 @@ public class ConverterService {
     }
 
     private static String extractTextFromScannedDocument(PDDocument document) throws IOException, TesseractException {
-
         // Extract images from file
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         StringBuilder out = new StringBuilder();
 
         ITesseract tesseract = new Tesseract();
 
-        tesseract.setDatapath(Paths.get("src", "main", "resources", "ORC", "tessdata").toFile().getAbsolutePath());
         tesseract.setLanguage("eng"); // Extract ENG
 
         for (int page = 0; page < document.getNumberOfPages(); page++) {
@@ -90,8 +86,8 @@ public class ConverterService {
     }
 
     public static boolean isEmptyStringArray(String[] lines) {
-        for (int i = 0; i < lines.length; i++) {
-            if (lines[i] != null) {
+        for (String line : lines) {
+            if (line != null) {
                 return false;
             }
         }
