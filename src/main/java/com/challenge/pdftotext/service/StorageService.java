@@ -8,12 +8,15 @@ import com.amazonaws.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static jdk.nashorn.internal.objects.NativeMath.log;
 
@@ -28,8 +31,10 @@ public class StorageService {
     @Autowired
     private AmazonS3 s3Client;
 
-    public String convertAndUploadFile(MultipartFile file) throws IOException {
-        File fileObj = convertMultiPartFileToFile(file);
+    @Async
+    public CompletableFuture<String> convertAndUploadFile(MultipartFile file) throws IOException, ExecutionException,
+            InterruptedException {
+        File fileObj = convertMultiPartFileToFile(file).get();
 
         // Convert to text
         File convertedFile = ConverterService.convertPDFToText(fileObj);
@@ -41,15 +46,16 @@ public class StorageService {
         fileObj.delete();
         convertedFile.delete();
 
-        return fileName;
+        return CompletableFuture.completedFuture(fileName);
     }
 
-    public byte[] downloadFile(String fileName) {
+    @Async
+    public CompletableFuture<byte[]> downloadFile(String fileName) {
         S3Object s3Object = s3Client.getObject(bucketName, fileName);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
             byte[] content = IOUtils.toByteArray(inputStream);
-            return content;
+            return CompletableFuture.completedFuture(content) ;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -61,13 +67,14 @@ public class StorageService {
 //        return fileName + " removed ...";
 //    }
 
-    private File convertMultiPartFileToFile(MultipartFile file) {
+    @Async
+    private CompletableFuture<File> convertMultiPartFileToFile(MultipartFile file) {
         File convertedFile = new File(file.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
             fos.write(file.getBytes());
         } catch (IOException e) {
             log("Error converting multipartFile to file", e);
         }
-        return convertedFile;
+        return CompletableFuture.completedFuture(convertedFile);
     }
 }

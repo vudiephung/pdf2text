@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 @ControllerAdvice
@@ -33,15 +34,20 @@ public class StorageController {
     private String maxFileSize;
 
     @GetMapping("/download/{fileName}")
-    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) {
-        byte[] data = service.downloadFile(fileName);
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileName) throws ExecutionException,
+            InterruptedException {
+        byte[] data = service.downloadFile(fileName).get();
         ByteArrayResource resource = new ByteArrayResource(data);
-        return ResponseEntity.ok().contentLength(data.length).header("Content-type", "application/octet-stream").header("Content-disposition", "attachment; filename=\"" + fileName + "\"").body(resource);
+        return ResponseEntity.ok().contentLength(data.length).
+                header("Content-type", "application/octet-stream").
+                header("Content-disposition", "attachment; filename=\"" + fileName + "\"").
+                body(resource);
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<ByteArrayResource> convertAndDownload(@RequestParam(value = "file") MultipartFile file) throws IOException {
-        String fileName = service.convertAndUploadFile(file);
+    public ResponseEntity<ByteArrayResource> convertAndDownload(@RequestParam(value = "file") MultipartFile file)
+            throws IOException, ExecutionException, InterruptedException {
+        String fileName = service.convertAndUploadFile(file).get();
         return downloadFile(fileName);
     }
 

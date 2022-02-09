@@ -9,7 +9,6 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
-import org.springframework.scheduling.annotation.Async;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -19,7 +18,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 public class ConverterService {
-    @Async
+
     public static File convertPDFToText(File uploadedFile) throws IOException {
         String originalFileName = uploadedFile.getName();
 
@@ -67,7 +66,6 @@ public class ConverterService {
         StringBuilder out = new StringBuilder();
 
         ITesseract tesseract = new Tesseract();
-
 
         tesseract.setDatapath(Paths.get("src", "main", "resources", "ORC", "tessdata").toFile().getAbsolutePath());
         tesseract.setLanguage("eng"); // Extract ENG
